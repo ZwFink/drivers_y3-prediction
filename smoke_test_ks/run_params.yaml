@@ -1,11 +1,12 @@
 ##############
 # run control
 ##############
+advance_time: False
 nviz: 5
 nrestart: 10
-nhealth: 3
-nstatus: 2
-viz_level: 1
+nhealth: 1
+nstatus: 1
+viz_level: 2
 viz_interval_type: 0
 #viz_interval_type: 1
 #viz_interval_type: 2
@@ -13,8 +14,8 @@ t_viz_interval: 1.e-9
 constant_cfl: 0
 #constant_cfl: 1
 current_cfl: 0.05
-current_dt: 2.0e-10
-t_final: 4.e-9
+current_dt: 1.0e-9
+t_final: 2.e-8
 
 ##############
 # wall model
@@ -28,19 +29,34 @@ wall_material: 2
 ##############
 nlimit: 1
 use_species_limiter: 1
-use_av: 1
+smooth_char_length_alpha: 0.025
+smooth_char_length: 5
+#smooth_char_length: 0
+smoothness_alpha: 1.e-12
+smoothness_tau: 1.e-12
+use_av: 0
+#use_av: 0
 alpha_sc: 0.01
 s0_sc: -5.0
 kappa_sc: 0.5
-order:  2
+av2_mu0: 0.1
+av2_beta0: 6.0
+av2_kappa0: 1.0
+av2_prandtl0: 0.9
+order:  3
+use_rhs_filter: True
+rhs_filter_cutoff: 2
 
 ##############
 # equation of state
 ##############
 nspecies:  7
-pyro_temp_iter: 1
+#nspecies:  2
+#nspecies:  0
+pyro_temp_iter: 2
 pyro_temp_tol: 1.
 transport: 1
+#transport: 0
 
 ##############
 # ignition parameters
@@ -53,13 +69,15 @@ ignition_strength: 600
 ignition_duration: 1.e-8
 ignition_diameter: 0.02
 integrator: compiled_lsrk54
-#health_pres_min: 2828
+#health_mass_frac_min: 0.1
+#health_temp_min: 100
+#health_pres_min: 400
 #health_pres_max: 274259
 
 ##############
 # initialization
 ##############
 vel_sigma: 500
-temp_sigma: 1250
+temp_sigma: 500
 vel_sigma_inj: 5000
 temp_sigma_inj: 5000

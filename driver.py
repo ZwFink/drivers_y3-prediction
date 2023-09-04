@@ -24,14 +24,16 @@ def dummy_main(args):
                         action="store", help="simulation case name")
     parser.add_argument("-g", "--logpath", type=ascii, dest="log_path", nargs="?",
                         action="store", help="simulation case name")
+    parser.add_argument("--esdg", action="store_true", default=False,
+                        help="enable entropy-stable for inviscid terms. [OFF]")
     parser.add_argument("--profile", action="store_true", default=False,
                         help="enable kernel profiling [OFF]")
-    parser.add_argument("--log", action="store_true", default=False,
-                        help="enable logging profiling [ON]")
     parser.add_argument("--lazy", action="store_true", default=False,
                         help="enable lazy evaluation [OFF]")
     parser.add_argument("--overintegration", action="store_true",
         help="use overintegration in the RHS computations")
+    parser.add_argument("--numpy", action="store_true",
+        help="use numpy-based eager actx.")
 
     args = parser.parse_args()
 
@@ -42,13 +44,14 @@ def dummy_main(args):
         casename = args.casename.replace("'", "")
     else:
         print(f"Default casename {casename}")
-    lazy = args.lazy
-    if args.profile:
-        if lazy:
-            raise ValueError("Can't use lazy and profiling together.")
 
-    from grudge.array_context import get_reasonable_array_context_class
-    actx_class = get_reasonable_array_context_class(lazy=lazy, distributed=True)
+    from mirgecom.simutil import ApplicationOptionsError
+    if args.esdg and not (args.lazy or args.numpy):
+        raise ApplicationOptionsError("ESDG requires lazy or numpy context.")
+
+    from mirgecom.array_context import get_reasonable_array_context_class
+    actx_class = get_reasonable_array_context_class(
+        lazy=args.lazy, distributed=True, profiling=args.profile, numpy=args.numpy)
 
     restart_filename = None
     if args.restart_file:
@@ -74,12 +77,27 @@ def dummy_main(args):
     print(f"Running {sys.argv[0]}\n")
 
     from y3prediction.prediction import main
-    comm = commi.CreateCharmCommunicator([8], 8)
-    comm.begin_exec(main, None, 
-    restart_filename, target_filename,
-    args.profile, args.log, 
-    input_file, args.overintegration, actx_class,
-    casename,
-    lazy, log_path)
+# <<<<<<< HEAD
+#     comm = commi.CreateCharmCommunicator([8], 8)
+#     comm.begin_exec(main, None, 
+#     restart_filename, target_filename,
+#     args.profile, args.log, 
+#     input_file, args.overintegration, actx_class,
+#     casename,
+#     lazy, log_path)
 
+# charm.start(dummy_main)
+# =======
+#     main(actx_class, restart_filename=restart_filename,
+#          target_filename=target_filename,
+#          user_input_file=input_file, log_path=log_path,
+#          use_overintegration=args.overintegration or args.esdg,
+#          casename=casename, use_esdg=args.esdg)
+# >>>>>>> e24f64b3dcbf40ab5418fe508f04c17ce4626816
+
+    comm = commi.CreateCharmCommunicator([8], 8)
+    comm.begin_exec(main, None,
+                    restart_filename, target_filename,
+                    input_file, args.overintegration, casename, log_path,
+                    args.esdg, args.lazy, True)
 charm.start(dummy_main)
