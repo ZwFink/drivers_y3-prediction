@@ -29,6 +29,7 @@ import numpy as np
 import pyopencl as cl
 import numpy.linalg as la  # noqa
 import pyopencl.array as cla  # noqa
+import commi
 import math
 import grudge.op as op
 from pytools.obj_array import make_obj_array
@@ -141,13 +142,19 @@ class _WallOxDiffCommTag:
     pass
 
 
-@mpi_entry_point
-def main(ctx_factory=cl.create_some_context,
-         restart_filename=None, target_filename=None,
-         use_profiling=False, use_logmgr=True, user_input_file=None,
-         use_overintegration=False, actx_class=None, casename=None,
-         lazy=False, log_path="log_data"):
+#@mpi_entry_point
+def main(comm, ctx_factory,
+         restart_filename, target_filename,
+         use_profiling, use_logmgr, user_input_file,
+         use_overintegration, actx_class, casename,
+         lazy, log_path):
 
+    if not ctx_factory:
+        ctx_factory = cl.create_some_context
+    if log_path is None:
+        log_path = "log_data"
+    use_logmgr = False
+    
     if actx_class is None:
         raise RuntimeError("Array context class missing.")
 
@@ -164,6 +171,7 @@ def main(ctx_factory=cl.create_some_context,
     h1.addFilter(f1)
     logger.addHandler(h1)
 
+
     # send everything else to stderr
     h2 = logging.StreamHandler(sys.stderr)
     f2 = SingleLevelFilter(logging.INFO, True)
@@ -172,10 +180,14 @@ def main(ctx_factory=cl.create_some_context,
 
     cl_ctx = ctx_factory()
 
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
+    commi.COMM_WORLD = comm
+    print(comm.__dict__)
+
+    #from mpi4py import MPI
+    #comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nparts = comm.Get_size()
+    print(f"Hello from rank {rank} of rank {nparts}")
 
     from mirgecom.simutil import global_reduce as _global_reduce
     global_reduce = partial(_global_reduce, comm=comm)

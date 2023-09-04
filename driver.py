@@ -1,8 +1,12 @@
 import logging
+from charm4py import charm
 import sys
+import mpi4py
+mpi4py.rc.initialize = False
 import argparse
+import commi
 
-if __name__ == "__main__":
+def dummy_main(args):
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -70,8 +74,12 @@ if __name__ == "__main__":
     print(f"Running {sys.argv[0]}\n")
 
     from y3prediction.prediction import main
-    main(restart_filename=restart_filename, target_filename=target_filename,
-         user_input_file=input_file, log_path=log_path,
-         use_profiling=args.profile, use_logmgr=args.log,
-         use_overintegration=args.overintegration, lazy=lazy,
-         actx_class=actx_class, casename=casename)
+    comm = commi.CreateCharmCommunicator([8], 8)
+    comm.begin_exec(main, None, 
+    restart_filename, target_filename,
+    args.profile, args.log, 
+    input_file, args.overintegration, actx_class,
+    casename,
+    lazy, log_path)
+
+charm.start(dummy_main)

@@ -1,10 +1,10 @@
 ##############
 # run control
 ##############
-nviz: 5
-nrestart: 10
-nhealth: 3
-nstatus: 2
+nviz: 500000
+nrestart: 500000
+nhealth: 30000000
+nstatus: 20000000
 viz_level: 1
 viz_interval_type: 0
 #viz_interval_type: 1
@@ -14,8 +14,8 @@ constant_cfl: 0
 #constant_cfl: 1
 current_cfl: 0.05
 current_dt: 1.0e-13
-t_final: 2.e-12
-mesh_filename: data/actii.msh
+t_final: 1.e-9
+mesh_filename: /p/gpfs1/fink12/drivers_y3-prediction/smoke_test_ks_3d/data/actii.msh
 dimen: 3
 
 ##############
