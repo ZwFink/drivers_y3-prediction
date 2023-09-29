@@ -1,28 +1,17 @@
 #! /bin/bash
 #BSUB -nnodes 1
 #BSUB -G uiuc
-#BSUB -W 120
+#BSUB -W 90
 #BSUB -J pred_smoke
-#BSUB -q pdebug
-#BSUB -o runOutput.txt
-#BSUB -e runOutput.txt
+#BSUB -o charm_odf1_4pes_redo.txt
+#BSUB -e charm_odf1_4pes_redo.txt
 
 module load gcc/8.3.1
 module load spectrum-mpi
 
-__conda_setup="$('${CONDA_PATH}/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-  eval "$__conda_setup"
-else
-  if [ -f "${CONDA_PATH}/etc/profile.d/conda.sh" ]; then
-    . "${CONDA_PATH}/etc/profile.d/conda.sh"
-  else
-    export PATH="${CONDA_PATH}/bin:$PATH"
-  fi
-fi
-unset __conda_setup
+source ~/.bashrc
 conda deactivate
-conda activate mirgeDriver.Y3prediction
+conda activate /usr/WS2/fink12/drivers_y3-prediction_charm/emirge/miniforge3/envs/mirgeDriver_retry_with_charm
 
 export PYOPENCL_CTX="port:tesla"
 #export PYOPENCL_CTX="0:2"
@@ -38,4 +27,6 @@ $jsrun_cmd js_task_info
 #  cd ../
 #fi
 
-$jsrun_cmd bash -c 'POCL_CACHE_DIR=$POCL_CACHE_ROOT/$OMPI_COMM_WORLD_RANK XDG_CACHE_HOME=$XDG_CACHE_ROOT/$OMPI_COMM_WORLD_RANK python -O -u -m mpi4py ./driver.py -i run_params.yaml --log --lazy > mirge-1.out'
+#$jsrun_cmd bash -c 'POCL_CACHE_DIR=$POCL_CACHE_ROOT/$OMPI_COMM_WORLD_RANK XDG_CACHE_HOME=$XDG_CACHE_ROOT/$OMPI_COMM_WORLD_RANK python -O -u -m mpi4py ./driver.py -i run_params.yaml --log --lazy > mirge-1.out'
+#jsrun -g 1 -a 1 -n 4 bash -c 'POCL_CACHE_DIR=$POCL_CACHE_ROOT/$OMPI_COMM_WORLD_RANK XDG_CACHE_HOME=$XDG_CACHE_ROOT/$OMPI_COMM_WORLD_RANK python3 -m mpi4py ./driver.py -i run_params.yaml --lazy'
+jsrun -g 1 -a 1 -n 4 bash -c 'POCL_CACHE_DIR=$POCL_CACHE_ROOT/$OMPI_COMM_WORLD_RANK XDG_CACHE_HOME=$XDG_CACHE_ROOT/$OMPI_COMM_WORLD_RANK python3 -O ./driver.py -i run_params.yaml --lazy'

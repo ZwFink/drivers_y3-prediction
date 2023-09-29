@@ -3,7 +3,7 @@
 ##############
 nviz: 500000
 nrestart: 500000
-nhealth: 30000000
+nhealth: 5
 nstatus: 20000000
 viz_level: 1
 viz_interval_type: 0
@@ -17,7 +17,7 @@ current_dt: 1.0e-13
 t_final: 1.e-9
 #current_dt: 1.0e-9
 #t_final: 2.e-8
-mesh_filename: data/actii.msh
+mesh_filename: data/actii_3d.msh
 dimen: 3
 
 ##############
@@ -26,8 +26,8 @@ dimen: 3
 wall_time_scale: 100
 wall_penalty_amount: 0
 wall_material: 2
-use_wall_mass: True
-use_wall_ox: True
+use_wall_mass: False
+use_wall_ox: False
 
 ##############
 # model control
@@ -49,6 +49,7 @@ alpha_sc: 0.01
 s0_sc: -5.0
 kappa_sc: 0.5
 order:  1
+#order:  4
 
 ##############
 # equation of state

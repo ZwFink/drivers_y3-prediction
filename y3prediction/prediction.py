@@ -393,11 +393,10 @@ def main(comm, actx_class,
          log_path, use_esdg, lazy, use_numpy):
 
     if not actx_class:
-        ctx_factory = cl.create_some_context
         # TODO: add 'to_nu
         from mirgecom.array_context import get_reasonable_array_context_class
         actx_class = get_reasonable_array_context_class(
-            lazy=lazy, distributed=True, profiling=use_profiling, numpy=use_numpy)
+            lazy=lazy, distributed=True, profiling=False, numpy=use_numpy)
     if log_path is None:
         log_path = "log_data"
     use_logmgr = False
@@ -424,9 +423,6 @@ def main(comm, actx_class,
     f2 = SingleLevelFilter(logging.INFO, True)
     h2.addFilter(f2)
     logger.addHandler(h2)
-
-    commi.COMM_WORLD = comm
-    print(comm.__dict__)
 
     rank = comm.Get_rank()
     nparts = comm.Get_size()
@@ -2821,6 +2817,10 @@ def main(comm, actx_class,
             logger.info(status_msg)
 
     def my_write_status_fluid(cv, dv, dt, cfl_fluid):
+        print(dt)
+        print(type(dt))
+        return
+
         status_msg = (f"----   dt {dt:1.3e},"
                       f" cfl_fluid {cfl_fluid:1.8f}")
 
@@ -2863,6 +2863,9 @@ def main(comm, actx_class,
             logger.info(status_msg)
 
     def my_write_status_wall(wall_temperature, dt, cfl_wall):
+        print(dt)
+        print(type(dt))
+        return
         status_msg = (f"----   wall dt {dt:1.3e},"
                       f" cfl_wall {cfl_wall:1.8f}")
 

@@ -95,9 +95,9 @@ def dummy_main(args):
 #          casename=casename, use_esdg=args.esdg)
 # >>>>>>> e24f64b3dcbf40ab5418fe508f04c17ce4626816
 
-    comm = commi.CreateCharmCommunicator([8], 8)
+    comm = commi.CreateCharmCommunicator([4], 4)
     comm.begin_exec(main, None,
                     restart_filename, target_filename,
                     input_file, args.overintegration, casename, log_path,
-                    args.esdg, args.lazy, True)
+                    args.esdg, args.lazy, False)
 charm.start(dummy_main)
